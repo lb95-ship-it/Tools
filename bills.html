@@ -6,60 +6,129 @@
 <title>🏠 Lizzy & James — Bill Tracker</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f5f5f0;color:#1a1a1a;padding:1rem;min-height:100vh}
-.wrap{max-width:900px;margin:0 auto}
-h1{font-size:1.2rem;font-weight:600;margin-bottom:.25rem}
-.sub{font-size:.8rem;color:#666;margin-bottom:1rem}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f0efe8;color:#1a1a1a;padding:1rem;min-height:100vh}
+.wrap{max-width:960px;margin:0 auto}
+h1{font-size:1.2rem;font-weight:700;margin-bottom:.15rem}
+.sub{font-size:.78rem;color:#888;margin-bottom:1rem}
+
+/* Cards */
 .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:1rem}
-.card{background:#fff;border-radius:10px;padding:.8rem 1rem;border:1px solid #e5e5e0}
-.card .clabel{font-size:.7rem;color:#888;margin-bottom:4px}
-.card .cval{font-size:1.3rem;font-weight:600}
-.owe{color:#a32d2d}.gets{color:#3b6d11}.neutral{color:#1a1a1a}.zero{color:#888}
-.btn{display:inline-flex;align-items:center;gap:6px;font-size:.8rem;padding:7px 14px;border-radius:8px;cursor:pointer;border:1px solid #d0d0c8;background:#fff;color:#1a1a1a;font-family:inherit}
-.btn:hover{background:#f0f0eb}
+.card{background:#fff;border-radius:12px;padding:.85rem 1rem;border:1px solid #e2e0d8}
+.card .clabel{font-size:.68rem;color:#999;margin-bottom:4px;text-transform:uppercase;letter-spacing:.03em}
+.card .cval{font-size:1.35rem;font-weight:700}
+.owe{color:#c0392b}.gets{color:#27ae60}.neutral{color:#1a1a1a}.zero{color:#aaa}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;gap:6px;font-size:.8rem;padding:7px 14px;border-radius:8px;cursor:pointer;border:1px solid #d0cfc8;background:#fff;color:#1a1a1a;font-family:inherit;font-weight:500}
+.btn:hover{background:#f5f4ee}
 .btn-primary{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
 .btn-primary:hover{background:#333}
-.btn-sm{font-size:.7rem;padding:3px 8px;border-radius:6px}
-.btn-danger{color:#a32d2d;border-color:#f0c0c0}
+.btn-sm{font-size:.7rem;padding:3px 9px;border-radius:6px}
+.btn-danger{color:#c0392b;border-color:#f5c6c6}
 .btn-danger:hover{background:#fff0f0}
-.form-box{background:#fff;border:1px solid #e5e5e0;border-radius:12px;padding:1.1rem 1.25rem;margin-bottom:1rem}
+.btn-success{background:#27ae60;color:#fff;border-color:#27ae60}
+.btn-success:hover{background:#219a52}
+
+/* Sync bar */
+.sync-bar{display:flex;align-items:center;gap:8px;font-size:.72rem;color:#888;margin-bottom:1rem;padding:.5rem .75rem;background:#fff;border:1px solid #e2e0d8;border-radius:8px}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:#ccc;flex-shrink:0}
+.sync-dot.ok{background:#27ae60}
+.sync-dot.err{background:#c0392b}
+.sync-dot.loading{background:#e67e22;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* View tabs */
+.view-tabs{display:flex;gap:6px;margin-bottom:1rem}
+.view-tab{font-size:.78rem;padding:6px 16px;border-radius:20px;cursor:pointer;border:1px solid #d0cfc8;background:#fff;color:#666;font-family:inherit;font-weight:500}
+.view-tab.active{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+
+/* Form */
+.form-box{background:#fff;border:1px solid #e2e0d8;border-radius:12px;padding:1.1rem 1.25rem;margin-bottom:1rem}
 .form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:10px}
-.field label{display:block;font-size:.7rem;color:#888;margin-bottom:3px}
-.field input,.field select{width:100%;font-size:.8rem;padding:6px 9px;border:1px solid #d0d0c8;border-radius:8px;background:#fff;color:#1a1a1a;font-family:inherit}
+.field label{display:block;font-size:.7rem;color:#888;margin-bottom:3px;font-weight:500}
+.field input,.field select{width:100%;font-size:.8rem;padding:6px 9px;border:1px solid #d0cfc8;border-radius:8px;background:#fff;color:#1a1a1a;font-family:inherit}
 .field input:focus,.field select:focus{outline:2px solid #1a1a1a;outline-offset:1px}
-.split-box{background:#f5f5f0;border-radius:8px;padding:.85rem 1rem;margin-bottom:12px}
-.split-box .slabel{font-size:.7rem;color:#888;margin-bottom:8px}
+.split-box{background:#f5f4ee;border-radius:8px;padding:.85rem 1rem;margin-bottom:12px}
 .split-row{display:flex;justify-content:space-between;font-size:.75rem;color:#666}
 input[type=range]{width:100%;margin:6px 0;accent-color:#1a1a1a}
-.tabs{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
-.tab{font-size:.72rem;padding:4px 12px;border-radius:20px;cursor:pointer;border:1px solid #d0d0c8;background:transparent;color:#1a1a1a;font-family:inherit}
-.tab.active{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
-.table-box{background:#fff;border:1px solid #e5e5e0;border-radius:12px;overflow:hidden}
+.mode-btns{display:flex;gap:6px;margin-bottom:10px}
+.mode-btn{font-size:.72rem;padding:4px 12px;border-radius:6px;cursor:pointer;border:1px solid #d0cfc8;background:transparent;color:#1a1a1a;font-family:inherit}
+.mode-btn.active{background:#fff;font-weight:600;border-color:#888}
+.manual-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.readonly{background:#f5f4ee!important;color:#888!important}
+.error{font-size:.75rem;color:#c0392b;background:#fdf0f0;border-radius:6px;padding:6px 10px;margin-bottom:10px;border:1px solid #f5c6c6}
+
+/* Payment method section */
+.method-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.method-section{background:#f5f4ee;border-radius:8px;padding:.75rem 1rem}
+.method-label{font-size:.68rem;color:#888;font-weight:600;text-transform:uppercase;letter-spacing:.03em;margin-bottom:6px}
+
+/* Filter tabs */
+.filter-tabs{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.filter-tab{font-size:.72rem;padding:4px 12px;border-radius:20px;cursor:pointer;border:1px solid #d0cfc8;background:transparent;color:#666;font-family:inherit}
+.filter-tab.active{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+
+/* Table */
+.table-box{background:#fff;border:1px solid #e2e0d8;border-radius:12px;overflow:hidden}
 .tbl-wrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:.8rem}
-th{text-align:left;padding:8px 10px;font-size:.7rem;color:#888;font-weight:500;border-bottom:1px solid #e5e5e0;white-space:nowrap}
-td{padding:8px 10px;border-bottom:1px solid #e5e5e0;vertical-align:middle}
-tr:last-child td{border-bottom:none}
-.badge{display:inline-block;font-size:.68rem;padding:2px 8px;border-radius:6px;font-weight:500}
-.badge-paid{background:#eaf3de;color:#3b6d11}
-.badge-due{background:#faeeda;color:#854f0b}
-.badge-overdue{background:#fcebeb;color:#a32d2d}
-.badge-recurring{background:#e6f1fb;color:#185fa5}
-.empty{padding:2rem;text-align:center;color:#aaa;font-size:.85rem}
+th{text-align:left;padding:9px 10px;font-size:.68rem;color:#999;font-weight:600;border-bottom:2px solid #e2e0d8;white-space:nowrap;text-transform:uppercase;letter-spacing:.03em;background:#faf9f5}
+td{padding:9px 10px;border-bottom:1px solid #f0efe8;vertical-align:middle}
+
+/* Row color coding */
+tr.row-paid{background:#f0faf4}
+tr.row-overdue{background:#fff8f8}
+tr.row-upcoming{background:#fff}
+tr.row-paid:hover{background:#e8f7ee}
+tr.row-overdue:hover{background:#fdf0f0}
+tr.row-upcoming:hover{background:#faf9f5}
+
+/* Badges */
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:.68rem;padding:3px 9px;border-radius:20px;font-weight:600;white-space:nowrap}
+.badge-paid{background:#d4edda;color:#155724;border:1px solid #b8dfc4}
+.badge-due{background:#fff3cd;color:#856404;border:1px solid #ffd97d}
+.badge-overdue{background:#f8d7da;color:#721c24;border:1px solid #f1aeb5}
+.badge-recurring{background:#cce5ff;color:#004085;border:1px solid #99caff}
+.badge-dot{width:6px;height:6px;border-radius:50%;display:inline-block}
+.dot-paid{background:#27ae60}
+.dot-due{background:#e67e22}
+.dot-overdue{background:#c0392b}
+.dot-recurring{background:#2980b9}
+
+/* Person chips */
+.person-chip{display:inline-block;font-size:.68rem;padding:2px 8px;border-radius:20px;font-weight:600}
+.chip-lizzy{background:#fce4ec;color:#880e4f;border:1px solid #f48fb1}
+.chip-james{background:#e3f2fd;color:#0d47a1;border:1px solid #90caf9}
+.chip-none{background:#f3f4f6;color:#666;border:1px solid #ddd}
+
+.method-chip{display:inline-block;font-size:.65rem;padding:2px 7px;border-radius:6px;background:#f0efe8;color:#666;border:1px solid #ddd;margin-top:2px}
+
+.empty{padding:2rem;text-align:center;color:#bbb;font-size:.85rem}
 .actions{display:flex;gap:4px;white-space:nowrap}
-.footer{font-size:.7rem;color:#aaa;text-align:right;margin-top:8px}
-.error{font-size:.75rem;color:#a32d2d;background:#fcebeb;border-radius:6px;padding:6px 10px;margin-bottom:10px}
-.mode-btns{display:flex;gap:6px;margin-bottom:10px}
-.mode-btn{font-size:.72rem;padding:4px 12px;border-radius:6px;cursor:pointer;border:1px solid #d0d0c8;background:transparent;color:#1a1a1a;font-family:inherit}
-.mode-btn.active{background:#fff;font-weight:500;border-color:#888}
-.manual-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.readonly{background:#f5f5f0!important;color:#888!important}
-.sync-bar{display:flex;align-items:center;gap:8px;font-size:.72rem;color:#888;margin-bottom:1rem;padding:.5rem .75rem;background:#fff;border:1px solid #e5e5e0;border-radius:8px}
-.sync-dot{width:8px;height:8px;border-radius:50%;background:#ccc;flex-shrink:0}
-.sync-dot.ok{background:#3b6d11}
-.sync-dot.err{background:#a32d2d}
-.sync-dot.loading{background:#854f0b;animation:pulse 1s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.footer{font-size:.7rem;color:#bbb;text-align:right;margin-top:8px}
+
+/* ── CALENDAR ── */
+.cal-wrap{background:#fff;border:1px solid #e2e0d8;border-radius:12px;overflow:hidden}
+.cal-header{display:flex;align-items:center;justify-content:space-between;padding:.85rem 1.1rem;border-bottom:1px solid #e2e0d8;background:#faf9f5}
+.cal-title{font-size:1rem;font-weight:700}
+.cal-nav{display:flex;gap:6px}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr)}
+.cal-dow{text-align:center;font-size:.65rem;font-weight:600;color:#aaa;padding:.5rem 0;text-transform:uppercase;letter-spacing:.04em;border-bottom:1px solid #f0efe8}
+.cal-cell{min-height:72px;padding:4px;border-right:1px solid #f0efe8;border-bottom:1px solid #f0efe8;vertical-align:top;position:relative}
+.cal-cell:nth-child(7n){border-right:none}
+.cal-day-num{font-size:.72rem;font-weight:600;color:#aaa;margin-bottom:2px}
+.cal-day-num.today{background:#1a1a1a;color:#fff;border-radius:50%;width:20px;height:20px;display:flex;align-items:center;justify-content:center;font-size:.68rem}
+.cal-day-num.cur-month{color:#1a1a1a}
+.cal-pill{font-size:.6rem;padding:2px 5px;border-radius:4px;margin-bottom:2px;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-weight:500;display:block}
+.cal-pill-paid{background:#d4edda;color:#155724}
+.cal-pill-overdue{background:#f8d7da;color:#721c24}
+.cal-pill-due{background:#fff3cd;color:#856404}
+.cal-pill-recurring{background:#cce5ff;color:#004085}
+.cal-empty{min-height:72px;border-right:1px solid #f0efe8;border-bottom:1px solid #f0efe8;background:#faf9f5}
+.cal-empty:nth-child(7n){border-right:none}
+.cal-legend{display:flex;gap:12px;flex-wrap:wrap;padding:.75rem 1.1rem;border-top:1px solid #f0efe8;font-size:.68rem;color:#666;background:#faf9f5}
+.cal-legend span{display:flex;align-items:center;gap:4px}
+.leg-dot{width:10px;height:10px;border-radius:3px}
 </style>
 </head>
 <body>
@@ -75,12 +144,17 @@ tr:last-child td{border-bottom:none}
 
   <div class="cards" id="cards"></div>
 
-  <div style="display:flex;justify-content:flex-end;margin-bottom:1rem">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem;flex-wrap:wrap;gap:8px">
+    <div class="view-tabs">
+      <button class="view-tab active" id="vt-list" onclick="setView('list')">📋 List</button>
+      <button class="view-tab" id="vt-calendar" onclick="setView('calendar')">📅 Calendar</button>
+    </div>
     <button class="btn" id="toggleFormBtn" onclick="toggleForm()">+ Add bill</button>
   </div>
 
+  <!-- Add/Edit Form -->
   <div class="form-box" id="formBox" style="display:none">
-    <div style="font-size:.85rem;font-weight:500;margin-bottom:12px" id="formTitle">Add a bill</div>
+    <div style="font-size:.88rem;font-weight:700;margin-bottom:12px" id="formTitle">Add a bill</div>
     <div id="formError" class="error" style="display:none"></div>
     <div class="form-grid">
       <div class="field"><label>Bill name</label><input id="f-name" placeholder="e.g. Electricity"/></div>
@@ -91,21 +165,39 @@ tr:last-child td{border-bottom:none}
       </select></div>
       <div class="field"><label>Total ($)</label><input id="f-amount" type="number" min="0" step="0.01" placeholder="0.00"/></div>
       <div class="field"><label>Due date</label><input id="f-due" type="date"/></div>
-      <div class="field"><label>Who paid?</label><select id="f-paidby">
-        <option>Lizzy</option><option>James</option><option>Not yet paid</option>
-      </select></div>
-      <div class="field"><label>Method</label><select id="f-method">
-        <option>Venmo</option><option>Zelle</option><option>Cash App</option><option>Apple Pay</option>
-        <option>Cash</option><option>Credit card</option><option>Bank transfer</option><option>Other</option>
-      </select></div>
       <div class="field"><label>Recurring?</label><select id="f-recur">
         <option>One-time</option><option>Weekly</option><option>Bi-weekly</option>
         <option>Monthly</option><option>Bi-monthly</option><option>Annually</option>
       </select></div>
     </div>
 
+    <!-- Payment method per person -->
+    <div class="method-grid">
+      <div class="method-section">
+        <div class="method-label">💗 Lizzy</div>
+        <div class="field" style="margin-bottom:6px"><label>Paid?</label>
+          <select id="f-lizzy-paid"><option value="no">Not yet</option><option value="yes">Yes, paid</option></select>
+        </div>
+        <div class="field"><label>Method</label><select id="f-lizzy-method">
+          <option>Venmo</option><option>Zelle</option><option>Cash App</option><option>Apple Pay</option>
+          <option>Cash</option><option>Credit card</option><option>Bank transfer</option><option>Other</option>
+        </select></div>
+      </div>
+      <div class="method-section">
+        <div class="method-label">💙 James</div>
+        <div class="field" style="margin-bottom:6px"><label>Paid?</label>
+          <select id="f-james-paid"><option value="no">Not yet</option><option value="yes">Yes, paid</option></select>
+        </div>
+        <div class="field"><label>Method</label><select id="f-james-method">
+          <option>Venmo</option><option>Zelle</option><option>Cash App</option><option>Apple Pay</option>
+          <option>Cash</option><option>Credit card</option><option>Bank transfer</option><option>Other</option>
+        </select></div>
+      </div>
+    </div>
+
+    <!-- Split -->
     <div class="split-box">
-      <div class="slabel">Split</div>
+      <div style="font-size:.7rem;color:#888;margin-bottom:8px;font-weight:600">SPLIT</div>
       <div class="mode-btns">
         <button class="mode-btn active" id="modeBtn-pct" onclick="setSplitMode('pct')">By %</button>
         <button class="mode-btn" id="modeBtn-manual" onclick="setSplitMode('manual')">By $</button>
@@ -129,11 +221,36 @@ tr:last-child td{border-bottom:none}
     </div>
   </div>
 
-  <div class="tabs" id="tabs"></div>
-
-  <div class="table-box">
-    <div id="billsContainer"><div class="empty">Loading…</div></div>
+  <!-- LIST VIEW -->
+  <div id="listView">
+    <div class="filter-tabs" id="filterTabs"></div>
+    <div class="table-box">
+      <div id="billsContainer"><div class="empty">Loading…</div></div>
+    </div>
   </div>
+
+  <!-- CALENDAR VIEW -->
+  <div id="calView" style="display:none">
+    <div class="cal-wrap">
+      <div class="cal-header">
+        <div class="cal-nav">
+          <button class="btn btn-sm" onclick="calPrev()">‹</button>
+          <button class="btn btn-sm" onclick="calToday()">Today</button>
+        </div>
+        <div class="cal-title" id="calTitle"></div>
+        <button class="btn btn-sm" onclick="calNext()">›</button>
+      </div>
+      <div class="cal-grid" id="calDows"></div>
+      <div class="cal-grid" id="calCells"></div>
+      <div class="cal-legend">
+        <span><span class="leg-dot" style="background:#d4edda;border:1px solid #b8dfc4"></span>Paid</span>
+        <span><span class="leg-dot" style="background:#fff3cd;border:1px solid #ffd97d"></span>Due</span>
+        <span><span class="leg-dot" style="background:#f8d7da;border:1px solid #f1aeb5"></span>Overdue</span>
+        <span><span class="leg-dot" style="background:#cce5ff;border:1px solid #99caff"></span>Recurring</span>
+      </div>
+    </div>
+  </div>
+
   <div class="footer" id="footer"></div>
 </div>
 
@@ -145,10 +262,15 @@ let editId = null;
 let filter = 'all';
 let splitMode = 'pct';
 let saving = false;
+let currentView = 'list';
+let calYear, calMonth;
+
+const now = new Date();
+calYear = now.getFullYear();
+calMonth = now.getMonth();
 
 function syncStatus(state, msg) {
-  const dot = document.getElementById('syncDot');
-  dot.className = 'sync-dot ' + state;
+  document.getElementById('syncDot').className = 'sync-dot ' + state;
   document.getElementById('syncMsg').textContent = msg;
 }
 
@@ -157,20 +279,28 @@ async function loadBills() {
   try {
     const res = await fetch(SCRIPT_URL);
     const data = await res.json();
-    bills = Array.isArray(data) ? data.map(b => ({
-      ...b,
-      id: Number(b.id),
-      amount: parseFloat(b.amount)||0,
-      split: parseInt(b.split)||50,
-      shares: { s1: parseFloat(b.sharesS1||b.shares?.s1)||0, s2: parseFloat(b.sharesS2||b.shares?.s2)||0 }
-    })) : [];
-    syncStatus('ok', 'Synced with Google Sheets · ' + new Date().toLocaleTimeString());
+    bills = Array.isArray(data) ? data.map(parseBill) : [];
+    syncStatus('ok', 'Synced · ' + new Date().toLocaleTimeString());
     render();
   } catch(e) {
-    syncStatus('err', 'Could not connect to sheet — showing cached data');
-    try { bills = JSON.parse(localStorage.getItem('hbt-cache')||'[]'); } catch(e2){ bills=[]; }
+    syncStatus('err', 'Could not connect — showing cached data');
+    try { bills = JSON.parse(localStorage.getItem('hbt-cache-v2')||'[]'); } catch(e2){ bills=[]; }
     render();
   }
+}
+
+function parseBill(b) {
+  return {
+    ...b,
+    id: Number(b.id),
+    amount: parseFloat(b.amount)||0,
+    split: parseInt(b.split)||50,
+    shares: { s1: parseFloat(b.sharesS1||b.shares?.s1)||0, s2: parseFloat(b.sharesS2||b.shares?.s2)||0 },
+    lizzyPaid: b.lizzyPaid||'no',
+    lizzyMethod: b.lizzyMethod||'Venmo',
+    jamesPaid: b.jamesPaid||'no',
+    jamesMethod: b.jamesMethod||'Venmo',
+  };
 }
 
 async function saveBills() {
@@ -178,22 +308,36 @@ async function saveBills() {
   saving = true;
   syncStatus('loading', 'Saving…');
   try {
-    localStorage.setItem('hbt-cache', JSON.stringify(bills));
-    await fetch(SCRIPT_URL, {
-      method: 'POST',
-      body: JSON.stringify({ action: 'save', bills })
-    });
+    localStorage.setItem('hbt-cache-v2', JSON.stringify(bills));
+    await fetch(SCRIPT_URL, { method:'POST', body: JSON.stringify({ action:'save', bills }) });
     syncStatus('ok', 'Saved · ' + new Date().toLocaleTimeString());
   } catch(e) {
-    syncStatus('err', 'Save failed — changes cached locally');
+    syncStatus('err', 'Save failed — cached locally');
   }
   saving = false;
 }
 
-function today() { return new Date().toISOString().slice(0,10); }
+function todayStr() { return new Date().toISOString().slice(0,10); }
 function fmt(n) { return '$' + Math.abs(parseFloat(n)||0).toFixed(2); }
 function fmtDate(d) { if(!d) return '—'; const [y,m,day]=d.split('-'); return `${m}/${day}/${y}`; }
-function isOverdue(b) { return b.due && b.due < today() && b.status !== 'paid'; }
+function isOverdue(b) { return b.due && b.due < todayStr() && b.status !== 'paid'; }
+function isPaid(b) { return b.status === 'paid'; }
+
+function billStatus(b) {
+  if (isPaid(b)) return 'paid';
+  if (isOverdue(b)) return 'overdue';
+  if (b.recur && b.recur !== 'One-time') return 'recurring';
+  return 'due';
+}
+
+function setView(v) {
+  currentView = v;
+  document.getElementById('listView').style.display = v==='list'?'block':'none';
+  document.getElementById('calView').style.display = v==='calendar'?'block':'none';
+  document.getElementById('vt-list').classList.toggle('active', v==='list');
+  document.getElementById('vt-calendar').classList.toggle('active', v==='calendar');
+  if (v==='calendar') renderCalendar();
+}
 
 function setSplitMode(m) {
   splitMode = m;
@@ -245,10 +389,12 @@ function cancelForm() {
 function resetForm() {
   ['f-name','f-amount','f-due','f-splitamt','f-splitamt2'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
   document.getElementById('f-cat').value='Utilities';
-  document.getElementById('f-paidby').value='Lizzy';
-  document.getElementById('f-method').value='Venmo';
   document.getElementById('f-recur').value='One-time';
   document.getElementById('f-split').value=50;
+  document.getElementById('f-lizzy-paid').value='no';
+  document.getElementById('f-lizzy-method').value='Venmo';
+  document.getElementById('f-james-paid').value='no';
+  document.getElementById('f-james-method').value='Venmo';
   setSplitMode('pct'); updateSplitPreview();
   document.getElementById('formError').style.display='none';
   document.getElementById('formTitle').textContent = editId ? 'Edit bill' : 'Add a bill';
@@ -263,15 +409,19 @@ function submitForm() {
   errEl.style.display='none';
   const shares = getShares();
   const pct = splitMode==='pct' ? parseInt(document.getElementById('f-split').value) : 50;
+  const lizzyPaid = document.getElementById('f-lizzy-paid').value;
+  const jamesPaid = document.getElementById('f-james-paid').value;
+  const status = (lizzyPaid==='yes' && jamesPaid==='yes') ? 'paid' : 'unpaid';
   const bill = {
     id: editId||Date.now(), name,
     category: document.getElementById('f-cat').value,
     amount, due: document.getElementById('f-due').value,
-    paidBy: document.getElementById('f-paidby').value,
-    method: document.getElementById('f-method').value,
     recur: document.getElementById('f-recur').value,
-    split: pct, shares,
-    status: editId ? (bills.find(b=>b.id===editId)?.status||'unpaid') : 'unpaid'
+    split: pct, shares, status,
+    lizzyPaid, lizzyMethod: document.getElementById('f-lizzy-method').value,
+    jamesPaid, jamesMethod: document.getElementById('f-james-method').value,
+    paidBy: lizzyPaid==='yes' ? 'Lizzy' : jamesPaid==='yes' ? 'James' : 'Not yet paid',
+    method: document.getElementById('f-lizzy-method').value,
   };
   if (editId) { bills = bills.map(b=>b.id===editId?bill:b); }
   else { bills.push(bill); }
@@ -289,15 +439,22 @@ function startEdit(id) {
   document.getElementById('f-cat').value=b.category||'Other';
   document.getElementById('f-amount').value=b.amount;
   document.getElementById('f-due').value=b.due||'';
-  document.getElementById('f-paidby').value=b.paidBy;
-  document.getElementById('f-method').value=b.method||'Venmo';
   document.getElementById('f-recur').value=b.recur||'One-time';
   document.getElementById('f-split').value=b.split||50;
+  document.getElementById('f-lizzy-paid').value=b.lizzyPaid||'no';
+  document.getElementById('f-lizzy-method').value=b.lizzyMethod||'Venmo';
+  document.getElementById('f-james-paid').value=b.jamesPaid||'no';
+  document.getElementById('f-james-method').value=b.jamesMethod||'Venmo';
   setSplitMode('pct'); updateSplitPreview();
+  window.scrollTo(0,0);
 }
 
 function togglePaid(id) {
-  bills = bills.map(b=>b.id===id?{...b,status:b.status==='paid'?'unpaid':'paid'}:b);
+  bills = bills.map(b=>{
+    if(b.id!==id) return b;
+    const newStatus = b.status==='paid'?'unpaid':'paid';
+    return {...b, status:newStatus, lizzyPaid:newStatus==='paid'?'yes':'no', jamesPaid:newStatus==='paid'?'yes':'no'};
+  });
   saveBills(); render();
 }
 
@@ -310,25 +467,34 @@ function deleteBill(id) {
 function setFilter(f) { filter=f; render(); }
 
 function render() {
+  renderSummary();
+  renderList();
+  if (currentView==='calendar') renderCalendar();
+  document.getElementById('footer').textContent = `${bills.length} bill${bills.length!==1?'s':''} · synced with Google Sheets`;
+}
+
+function renderSummary() {
   let lizzy=0, james=0;
   bills.forEach(b=>{
     if(b.status==='paid') return;
     const s1=b.shares?.s1||0, s2=b.shares?.s2||0;
-    if(b.paidBy==='Lizzy') james+=s2;
-    else if(b.paidBy==='James') lizzy+=s1;
+    if(b.lizzyPaid!=='yes') lizzy+=s1;
+    if(b.jamesPaid!=='yes') james+=s2;
   });
   const unpaid = bills.filter(b=>b.status!=='paid').reduce((s,b)=>s+b.amount,0);
   const overdueCnt = bills.filter(isOverdue).length;
-
   document.getElementById('cards').innerHTML = [
     {l:'Lizzy owes',v:fmt(lizzy),cls:lizzy>0?'owe':'zero'},
     {l:'James owes',v:fmt(james),cls:james>0?'owe':'zero'},
     {l:'Unpaid total',v:fmt(unpaid),cls:'neutral'},
     {l:'Overdue',v:overdueCnt,cls:overdueCnt>0?'owe':'zero'},
   ].map(c=>`<div class="card"><div class="clabel">${c.l}</div><div class="cval ${c.cls}">${c.v}</div></div>`).join('');
+}
 
-  document.getElementById('tabs').innerHTML = ['all','unpaid','paid','overdue'].map(t=>
-    `<button class="tab${filter===t?' active':''}" onclick="setFilter('${t}')">${t.charAt(0).toUpperCase()+t.slice(1)}${t==='overdue'&&overdueCnt>0?' ('+overdueCnt+')':''}</button>`
+function renderList() {
+  const overdueCnt = bills.filter(isOverdue).length;
+  document.getElementById('filterTabs').innerHTML = ['all','unpaid','paid','overdue'].map(t=>
+    `<button class="filter-tab${filter===t?' active':''}" onclick="setFilter('${t}')">${t.charAt(0).toUpperCase()+t.slice(1)}${t==='overdue'&&overdueCnt>0?' ('+overdueCnt+')':''}</button>`
   ).join('');
 
   let list = bills.filter(b=>
@@ -336,35 +502,101 @@ function render() {
   ).sort((a,b)=>(!a.due&&!b.due)?0:!a.due?1:!b.due?-1:a.due.localeCompare(b.due));
 
   const container = document.getElementById('billsContainer');
-  if(!list.length) { container.innerHTML=`<div class="empty">${filter==='all'?'No bills yet — add one above.':'No bills match this filter.'}</div>`; }
-  else {
-    container.innerHTML=`<div class="tbl-wrap"><table>
-      <thead><tr><th>Bill</th><th>Amount</th><th>Split</th><th>Paid by</th><th>Due</th><th>Recurs</th><th>Status</th><th></th></tr></thead>
-      <tbody>${list.map(b=>{
-        const over=isOverdue(b);
-        const s1=b.shares?.s1||0, s2=b.shares?.s2||0;
-        const badge=b.status==='paid'?'<span class="badge badge-paid">Paid</span>':
-          over?'<span class="badge badge-overdue">Overdue</span>':
-          (b.recur&&b.recur!=='One-time')?'<span class="badge badge-recurring">Recurring</span>':
-          '<span class="badge badge-due">Due</span>';
-        return `<tr style="opacity:${b.status==='paid'?0.55:1}">
-          <td><div style="font-weight:500">${b.name}</div><div style="font-size:.7rem;color:#888">${b.category||''}</div></td>
-          <td style="font-weight:500;white-space:nowrap">$${(b.amount||0).toFixed(2)}</td>
-          <td style="font-size:.75rem;color:#666;white-space:nowrap"><div>Lizzy: $${s1.toFixed(2)}</div><div>James: $${s2.toFixed(2)}</div></td>
-          <td style="white-space:nowrap"><div>${b.paidBy}</div><div style="font-size:.7rem;color:#888">${b.method||''}</div></td>
-          <td style="font-size:.75rem;white-space:nowrap;color:${over?'#a32d2d':'inherit'}">${fmtDate(b.due)}</td>
-          <td style="font-size:.75rem;color:#888;white-space:nowrap">${b.recur||'One-time'}</td>
-          <td>${badge}</td>
-          <td><div class="actions">
-            <button class="btn btn-sm" onclick="togglePaid(${b.id})">${b.status==='paid'?'Unmark':'✓ Paid'}</button>
-            <button class="btn btn-sm" onclick="startEdit(${b.id})">Edit</button>
-            <button class="btn btn-sm btn-danger" onclick="deleteBill(${b.id})">✕</button>
-          </div></td>
-        </tr>`;
-      }).join('')}</tbody>
-    </table></div>`;
+  if(!list.length) { container.innerHTML=`<div class="empty">${filter==='all'?'No bills yet — add one above.':'No bills match this filter.'}</div>`; return; }
+
+  container.innerHTML=`<div class="tbl-wrap"><table>
+    <thead><tr><th>Bill</th><th>Amount</th><th>Split</th><th>Lizzy</th><th>James</th><th>Due</th><th>Recurs</th><th>Status</th><th></th></tr></thead>
+    <tbody>${list.map(b=>{
+      const st = billStatus(b);
+      const rowClass = st==='paid'?'row-paid':st==='overdue'?'row-overdue':'row-upcoming';
+      const s1=b.shares?.s1||0, s2=b.shares?.s2||0;
+      const badgeHtml = st==='paid'
+        ?`<span class="badge badge-paid"><span class="badge-dot dot-paid"></span>Paid</span>`
+        :st==='overdue'
+        ?`<span class="badge badge-overdue"><span class="badge-dot dot-overdue"></span>Overdue</span>`
+        :st==='recurring'
+        ?`<span class="badge badge-recurring"><span class="badge-dot dot-recurring"></span>Recurring</span>`
+        :`<span class="badge badge-due"><span class="badge-dot dot-due"></span>Due</span>`;
+
+      const lizzyCell = `<div><span class="person-chip chip-lizzy">💗 Lizzy</span></div>
+        <div style="font-size:.7rem;color:#666;margin-top:2px">$${s1.toFixed(2)}</div>
+        <div>${b.lizzyPaid==='yes'
+          ?`<span style="font-size:.65rem;color:#27ae60;font-weight:600">✓ Paid</span>`
+          :`<span style="font-size:.65rem;color:#e67e22;font-weight:600">Owes</span>`}
+        </div>
+        <span class="method-chip">${b.lizzyMethod||'—'}</span>`;
+
+      const jamesCell = `<div><span class="person-chip chip-james">💙 James</span></div>
+        <div style="font-size:.7rem;color:#666;margin-top:2px">$${s2.toFixed(2)}</div>
+        <div>${b.jamesPaid==='yes'
+          ?`<span style="font-size:.65rem;color:#27ae60;font-weight:600">✓ Paid</span>`
+          :`<span style="font-size:.65rem;color:#e67e22;font-weight:600">Owes</span>`}
+        </div>
+        <span class="method-chip">${b.jamesMethod||'—'}</span>`;
+
+      return `<tr class="${rowClass}" style="opacity:${st==='paid'?0.7:1}">
+        <td><div style="font-weight:600">${b.name}</div><div style="font-size:.68rem;color:#aaa">${b.category||''}</div></td>
+        <td style="font-weight:700;white-space:nowrap;font-size:.9rem">$${(b.amount||0).toFixed(2)}</td>
+        <td style="font-size:.72rem;color:#888;white-space:nowrap">${b.split||50}% / ${100-(b.split||50)}%</td>
+        <td>${lizzyCell}</td>
+        <td>${jamesCell}</td>
+        <td style="font-size:.75rem;white-space:nowrap;color:${st==='overdue'?'#c0392b':st==='paid'?'#27ae60':'#1a1a1a'};font-weight:${st==='overdue'?'700':'400'}">${fmtDate(b.due)}</td>
+        <td style="font-size:.72rem;color:#aaa;white-space:nowrap">${b.recur||'One-time'}</td>
+        <td>${badgeHtml}</td>
+        <td><div class="actions">
+          <button class="btn btn-sm${st==='paid'?'':' btn-success'}" onclick="togglePaid(${b.id})">${st==='paid'?'Unmark':'✓ Paid'}</button>
+          <button class="btn btn-sm" onclick="startEdit(${b.id})">Edit</button>
+          <button class="btn btn-sm btn-danger" onclick="deleteBill(${b.id})">✕</button>
+        </div></td>
+      </tr>`;
+    }).join('')}</tbody>
+  </table></div>`;
+}
+
+/* ── CALENDAR ── */
+function calPrev() { calMonth--; if(calMonth<0){calMonth=11;calYear--;} renderCalendar(); }
+function calNext() { calMonth++; if(calMonth>11){calMonth=0;calYear++;} renderCalendar(); }
+function calToday() { const n=new Date(); calYear=n.getFullYear(); calMonth=n.getMonth(); renderCalendar(); }
+
+function renderCalendar() {
+  const months=['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('calTitle').textContent = `${months[calMonth]} ${calYear}`;
+
+  const dows=['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  document.getElementById('calDows').innerHTML = dows.map(d=>`<div class="cal-dow">${d}</div>`).join('');
+
+  const firstDay = new Date(calYear, calMonth, 1).getDay();
+  const daysInMonth = new Date(calYear, calMonth+1, 0).getDate();
+  const todayFull = new Date().toISOString().slice(0,10);
+
+  // Map bills to their due dates this month
+  const billsByDate = {};
+  bills.forEach(b=>{
+    if(!b.due) return;
+    const [y,m,d] = b.due.split('-');
+    if(parseInt(y)===calYear && parseInt(m)-1===calMonth) {
+      if(!billsByDate[parseInt(d)]) billsByDate[parseInt(d)]=[];
+      billsByDate[parseInt(d)].push(b);
+    }
+  });
+
+  let cells = '';
+  for(let i=0;i<firstDay;i++) cells += `<div class="cal-empty"></div>`;
+  for(let d=1;d<=daysInMonth;d++) {
+    const dateStr = `${calYear}-${String(calMonth+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const isToday = dateStr===todayFull;
+    const dayBills = billsByDate[d]||[];
+    const numEl = isToday
+      ? `<div class="cal-day-num today">${d}</div>`
+      : `<div class="cal-day-num cur-month">${d}</div>`;
+    const pills = dayBills.map(b=>{
+      const st=billStatus(b);
+      const cls=st==='paid'?'cal-pill-paid':st==='overdue'?'cal-pill-overdue':st==='recurring'?'cal-pill-recurring':'cal-pill-due';
+      return `<span class="cal-pill ${cls}" title="${b.name} — $${b.amount.toFixed(2)}">${b.name}</span>`;
+    }).join('');
+    cells += `<div class="cal-cell">${numEl}${pills}</div>`;
   }
-  document.getElementById('footer').textContent = `${bills.length} bill${bills.length!==1?'s':''} · synced with Google Sheets`;
+  document.getElementById('calCells').innerHTML = cells;
 }
 
 document.getElementById('f-amount').addEventListener('input', ()=>{ updateSplitPreview(); updateManualPreview(); });
