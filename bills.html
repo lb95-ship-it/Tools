@@ -54,12 +54,24 @@ tr:last-child td{border-bottom:none}
 .mode-btn.active{background:#fff;font-weight:500;border-color:#888}
 .manual-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .readonly{background:#f5f5f0!important;color:#888!important}
+.sync-bar{display:flex;align-items:center;gap:8px;font-size:.72rem;color:#888;margin-bottom:1rem;padding:.5rem .75rem;background:#fff;border:1px solid #e5e5e0;border-radius:8px}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:#ccc;flex-shrink:0}
+.sync-dot.ok{background:#3b6d11}
+.sync-dot.err{background:#a32d2d}
+.sync-dot.loading{background:#854f0b;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
 </style>
 </head>
 <body>
 <div class="wrap">
   <h1>🏠 Lizzy & James</h1>
   <div class="sub">Household bill tracker</div>
+
+  <div class="sync-bar">
+    <div class="sync-dot loading" id="syncDot"></div>
+    <span id="syncMsg">Connecting to shared sheet…</span>
+    <button class="btn btn-sm" style="margin-left:auto" onclick="loadBills()">↻ Refresh</button>
+  </div>
 
   <div class="cards" id="cards"></div>
 
@@ -112,7 +124,7 @@ tr:last-child td{border-bottom:none}
     </div>
 
     <div style="display:flex;gap:8px">
-      <button class="btn btn-primary" onclick="submitForm()">Add bill</button>
+      <button class="btn btn-primary" id="submitBtn" onclick="submitForm()">Add bill</button>
       <button class="btn" onclick="cancelForm()">Cancel</button>
     </div>
   </div>
@@ -120,24 +132,62 @@ tr:last-child td{border-bottom:none}
   <div class="tabs" id="tabs"></div>
 
   <div class="table-box">
-    <div id="billsContainer"></div>
+    <div id="billsContainer"><div class="empty">Loading…</div></div>
   </div>
   <div class="footer" id="footer"></div>
 </div>
 
 <script>
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz6GCa94TtkBuQJdhg3fX3DWjtLFfN6VQv2NZs458_Wa7-IZdatIwIO_wENNVbYnIlC8Q/exec";
+
 let bills = [];
 let editId = null;
 let filter = 'all';
 let splitMode = 'pct';
+let saving = false;
 
-function load() {
-  try { bills = JSON.parse(localStorage.getItem('hbt-bills-lj') || '[]'); } catch(e) { bills = []; }
-  render();
+function syncStatus(state, msg) {
+  const dot = document.getElementById('syncDot');
+  dot.className = 'sync-dot ' + state;
+  document.getElementById('syncMsg').textContent = msg;
 }
 
-function save() {
-  try { localStorage.setItem('hbt-bills-lj', JSON.stringify(bills)); } catch(e) {}
+async function loadBills() {
+  syncStatus('loading', 'Syncing with shared sheet…');
+  try {
+    const res = await fetch(SCRIPT_URL);
+    const data = await res.json();
+    bills = Array.isArray(data) ? data.map(b => ({
+      ...b,
+      id: Number(b.id),
+      amount: parseFloat(b.amount)||0,
+      split: parseInt(b.split)||50,
+      shares: { s1: parseFloat(b.sharesS1||b.shares?.s1)||0, s2: parseFloat(b.sharesS2||b.shares?.s2)||0 }
+    })) : [];
+    syncStatus('ok', 'Synced with Google Sheets · ' + new Date().toLocaleTimeString());
+    render();
+  } catch(e) {
+    syncStatus('err', 'Could not connect to sheet — showing cached data');
+    try { bills = JSON.parse(localStorage.getItem('hbt-cache')||'[]'); } catch(e2){ bills=[]; }
+    render();
+  }
+}
+
+async function saveBills() {
+  if (saving) return;
+  saving = true;
+  syncStatus('loading', 'Saving…');
+  try {
+    localStorage.setItem('hbt-cache', JSON.stringify(bills));
+    await fetch(SCRIPT_URL, {
+      method: 'POST',
+      body: JSON.stringify({ action: 'save', bills })
+    });
+    syncStatus('ok', 'Saved · ' + new Date().toLocaleTimeString());
+  } catch(e) {
+    syncStatus('err', 'Save failed — changes cached locally');
+  }
+  saving = false;
 }
 
 function today() { return new Date().toISOString().slice(0,10); }
@@ -157,11 +207,10 @@ function updateSplitPreview() {
   const total = parseFloat(document.getElementById('f-amount').value)||0;
   const pct = parseInt(document.getElementById('f-split').value);
   const s1 = +((pct/100)*total).toFixed(2);
-  const s2 = +(total-s1).toFixed(2);
   document.getElementById('pct-lizzy').textContent = `Lizzy ${pct}%`;
   document.getElementById('pct-james').textContent = `James ${100-pct}%`;
   document.getElementById('amt-lizzy').textContent = fmt(s1);
-  document.getElementById('amt-james').textContent = fmt(s2);
+  document.getElementById('amt-james').textContent = fmt(total-s1);
 }
 
 function updateManualPreview() {
@@ -183,8 +232,8 @@ function getShares() {
 
 function toggleForm() {
   const box = document.getElementById('formBox');
-  const showing = box.style.display !== 'none';
-  if (showing) { cancelForm(); } else { editId=null; resetForm(); box.style.display='block'; document.getElementById('toggleFormBtn').textContent='✕ Cancel'; }
+  if (box.style.display !== 'none') { cancelForm(); }
+  else { editId=null; resetForm(); box.style.display='block'; document.getElementById('toggleFormBtn').textContent='✕ Cancel'; }
 }
 
 function cancelForm() {
@@ -203,7 +252,7 @@ function resetForm() {
   setSplitMode('pct'); updateSplitPreview();
   document.getElementById('formError').style.display='none';
   document.getElementById('formTitle').textContent = editId ? 'Edit bill' : 'Add a bill';
-  document.querySelector('#formBox .btn-primary').textContent = editId ? 'Save changes' : 'Add bill';
+  document.getElementById('submitBtn').textContent = editId ? 'Save changes' : 'Add bill';
 }
 
 function submitForm() {
@@ -226,7 +275,7 @@ function submitForm() {
   };
   if (editId) { bills = bills.map(b=>b.id===editId?bill:b); }
   else { bills.push(bill); }
-  save(); cancelForm(); render();
+  saveBills(); cancelForm(); render();
 }
 
 function startEdit(id) {
@@ -235,7 +284,7 @@ function startEdit(id) {
   document.getElementById('formBox').style.display='block';
   document.getElementById('toggleFormBtn').textContent='✕ Cancel';
   document.getElementById('formTitle').textContent='Edit bill';
-  document.querySelector('#formBox .btn-primary').textContent='Save changes';
+  document.getElementById('submitBtn').textContent='Save changes';
   document.getElementById('f-name').value=b.name;
   document.getElementById('f-cat').value=b.category||'Other';
   document.getElementById('f-amount').value=b.amount;
@@ -249,19 +298,18 @@ function startEdit(id) {
 
 function togglePaid(id) {
   bills = bills.map(b=>b.id===id?{...b,status:b.status==='paid'?'unpaid':'paid'}:b);
-  save(); render();
+  saveBills(); render();
 }
 
 function deleteBill(id) {
   if(!confirm('Delete this bill?')) return;
   bills = bills.filter(b=>b.id!==id);
-  save(); render();
+  saveBills(); render();
 }
 
 function setFilter(f) { filter=f; render(); }
 
 function render() {
-  // Balance
   let lizzy=0, james=0;
   bills.forEach(b=>{
     if(b.status==='paid') return;
@@ -273,21 +321,18 @@ function render() {
   const overdueCnt = bills.filter(isOverdue).length;
 
   document.getElementById('cards').innerHTML = [
-    {l:'Lizzy owes',v:fmt(lizzy),cls:lizzy>0?'owe':lizzy<0?'gets':'zero'},
-    {l:'James owes',v:fmt(james),cls:james>0?'owe':james<0?'gets':'zero'},
+    {l:'Lizzy owes',v:fmt(lizzy),cls:lizzy>0?'owe':'zero'},
+    {l:'James owes',v:fmt(james),cls:james>0?'owe':'zero'},
     {l:'Unpaid total',v:fmt(unpaid),cls:'neutral'},
     {l:'Overdue',v:overdueCnt,cls:overdueCnt>0?'owe':'zero'},
   ].map(c=>`<div class="card"><div class="clabel">${c.l}</div><div class="cval ${c.cls}">${c.v}</div></div>`).join('');
 
-  // Tabs
-  const tabs = ['all','unpaid','paid','overdue'];
-  document.getElementById('tabs').innerHTML = tabs.map(t=>`<button class="tab${filter===t?' active':''}" onclick="setFilter('${t}')">${t.charAt(0).toUpperCase()+t.slice(1)}${t==='overdue'&&overdueCnt>0?' ('+overdueCnt+')':''}</button>`).join('');
+  document.getElementById('tabs').innerHTML = ['all','unpaid','paid','overdue'].map(t=>
+    `<button class="tab${filter===t?' active':''}" onclick="setFilter('${t}')">${t.charAt(0).toUpperCase()+t.slice(1)}${t==='overdue'&&overdueCnt>0?' ('+overdueCnt+')':''}</button>`
+  ).join('');
 
-  // Filter & sort
   let list = bills.filter(b=>
-    filter==='unpaid'?b.status!=='paid':
-    filter==='paid'?b.status==='paid':
-    filter==='overdue'?isOverdue(b):true
+    filter==='unpaid'?b.status!=='paid':filter==='paid'?b.status==='paid':filter==='overdue'?isOverdue(b):true
   ).sort((a,b)=>(!a.due&&!b.due)?0:!a.due?1:!b.due?-1:a.due.localeCompare(b.due));
 
   const container = document.getElementById('billsContainer');
@@ -319,12 +364,11 @@ function render() {
       }).join('')}</tbody>
     </table></div>`;
   }
-
-  document.getElementById('footer').textContent = `${bills.length} bill${bills.length!==1?'s':''} saved to this browser`;
+  document.getElementById('footer').textContent = `${bills.length} bill${bills.length!==1?'s':''} · synced with Google Sheets`;
 }
 
 document.getElementById('f-amount').addEventListener('input', ()=>{ updateSplitPreview(); updateManualPreview(); });
-load();
+loadBills();
 </script>
 </body>
 </html>
