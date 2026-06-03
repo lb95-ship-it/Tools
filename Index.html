@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>🏠 Lizzy & James — Bill Tracker</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#f5f5f0;color:#1a1a1a;padding:1rem;min-height:100vh}
+.wrap{max-width:900px;margin:0 auto}
+h1{font-size:1.2rem;font-weight:600;margin-bottom:.25rem}
+.sub{font-size:.8rem;color:#666;margin-bottom:1rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:1rem}
+.card{background:#fff;border-radius:10px;padding:.8rem 1rem;border:1px solid #e5e5e0}
+.card .clabel{font-size:.7rem;color:#888;margin-bottom:4px}
+.card .cval{font-size:1.3rem;font-weight:600}
+.owe{color:#a32d2d}.gets{color:#3b6d11}.neutral{color:#1a1a1a}.zero{color:#888}
+.btn{display:inline-flex;align-items:center;gap:6px;font-size:.8rem;padding:7px 14px;border-radius:8px;cursor:pointer;border:1px solid #d0d0c8;background:#fff;color:#1a1a1a;font-family:inherit}
+.btn:hover{background:#f0f0eb}
+.btn-primary{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+.btn-primary:hover{background:#333}
+.btn-sm{font-size:.7rem;padding:3px 8px;border-radius:6px}
+.btn-danger{color:#a32d2d;border-color:#f0c0c0}
+.btn-danger:hover{background:#fff0f0}
+.form-box{background:#fff;border:1px solid #e5e5e0;border-radius:12px;padding:1.1rem 1.25rem;margin-bottom:1rem}
+.form-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin-bottom:10px}
+.field label{display:block;font-size:.7rem;color:#888;margin-bottom:3px}
+.field input,.field select{width:100%;font-size:.8rem;padding:6px 9px;border:1px solid #d0d0c8;border-radius:8px;background:#fff;color:#1a1a1a;font-family:inherit}
+.field input:focus,.field select:focus{outline:2px solid #1a1a1a;outline-offset:1px}
+.split-box{background:#f5f5f0;border-radius:8px;padding:.85rem 1rem;margin-bottom:12px}
+.split-box .slabel{font-size:.7rem;color:#888;margin-bottom:8px}
+.split-row{display:flex;justify-content:space-between;font-size:.75rem;color:#666}
+input[type=range]{width:100%;margin:6px 0;accent-color:#1a1a1a}
+.tabs{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap}
+.tab{font-size:.72rem;padding:4px 12px;border-radius:20px;cursor:pointer;border:1px solid #d0d0c8;background:transparent;color:#1a1a1a;font-family:inherit}
+.tab.active{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+.table-box{background:#fff;border:1px solid #e5e5e0;border-radius:12px;overflow:hidden}
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:.8rem}
+th{text-align:left;padding:8px 10px;font-size:.7rem;color:#888;font-weight:500;border-bottom:1px solid #e5e5e0;white-space:nowrap}
+td{padding:8px 10px;border-bottom:1px solid #e5e5e0;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+.badge{display:inline-block;font-size:.68rem;padding:2px 8px;border-radius:6px;font-weight:500}
+.badge-paid{background:#eaf3de;color:#3b6d11}
+.badge-due{background:#faeeda;color:#854f0b}
+.badge-overdue{background:#fcebeb;color:#a32d2d}
+.badge-recurring{background:#e6f1fb;color:#185fa5}
+.empty{padding:2rem;text-align:center;color:#aaa;font-size:.85rem}
+.actions{display:flex;gap:4px;white-space:nowrap}
+.footer{font-size:.7rem;color:#aaa;text-align:right;margin-top:8px}
+.error{font-size:.75rem;color:#a32d2d;background:#fcebeb;border-radius:6px;padding:6px 10px;margin-bottom:10px}
+.mode-btns{display:flex;gap:6px;margin-bottom:10px}
+.mode-btn{font-size:.72rem;padding:4px 12px;border-radius:6px;cursor:pointer;border:1px solid #d0d0c8;background:transparent;color:#1a1a1a;font-family:inherit}
+.mode-btn.active{background:#fff;font-weight:500;border-color:#888}
+.manual-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.readonly{background:#f5f5f0!important;color:#888!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🏠 Lizzy & James</h1>
+  <div class="sub">Household bill tracker</div>
+
+  <div class="cards" id="cards"></div>
+
+  <div style="display:flex;justify-content:flex-end;margin-bottom:1rem">
+    <button class="btn" id="toggleFormBtn" onclick="toggleForm()">+ Add bill</button>
+  </div>
+
+  <div class="form-box" id="formBox" style="display:none">
+    <div style="font-size:.85rem;font-weight:500;margin-bottom:12px" id="formTitle">Add a bill</div>
+    <div id="formError" class="error" style="display:none"></div>
+    <div class="form-grid">
+      <div class="field"><label>Bill name</label><input id="f-name" placeholder="e.g. Electricity"/></div>
+      <div class="field"><label>Category</label><select id="f-cat">
+        <option>Rent/Mortgage</option><option selected>Utilities</option><option>Internet</option>
+        <option>Groceries</option><option>Streaming</option><option>Insurance</option>
+        <option>Phone</option><option>Subscriptions</option><option>Other</option>
+      </select></div>
+      <div class="field"><label>Total ($)</label><input id="f-amount" type="number" min="0" step="0.01" placeholder="0.00"/></div>
+      <div class="field"><label>Due date</label><input id="f-due" type="date"/></div>
+      <div class="field"><label>Who paid?</label><select id="f-paidby">
+        <option>Lizzy</option><option>James</option><option>Not yet paid</option>
+      </select></div>
+      <div class="field"><label>Method</label><select id="f-method">
+        <option>Venmo</option><option>Zelle</option><option>Cash App</option><option>Apple Pay</option>
+        <option>Cash</option><option>Credit card</option><option>Bank transfer</option><option>Other</option>
+      </select></div>
+      <div class="field"><label>Recurring?</label><select id="f-recur">
+        <option>One-time</option><option>Weekly</option><option>Bi-weekly</option>
+        <option>Monthly</option><option>Bi-monthly</option><option>Annually</option>
+      </select></div>
+    </div>
+
+    <div class="split-box">
+      <div class="slabel">Split</div>
+      <div class="mode-btns">
+        <button class="mode-btn active" id="modeBtn-pct" onclick="setSplitMode('pct')">By %</button>
+        <button class="mode-btn" id="modeBtn-manual" onclick="setSplitMode('manual')">By $</button>
+      </div>
+      <div id="split-pct">
+        <div class="split-row"><span id="pct-lizzy">Lizzy 50%</span><span id="pct-james">James 50%</span></div>
+        <input type="range" id="f-split" min="0" max="100" value="50" step="1" oninput="updateSplitPreview()"/>
+        <div class="split-row"><span id="amt-lizzy">$0.00</span><span id="amt-james">$0.00</span></div>
+      </div>
+      <div id="split-manual" style="display:none">
+        <div class="manual-grid">
+          <div class="field"><label>Lizzy's amount ($)</label><input id="f-splitamt" type="number" min="0" step="0.01" placeholder="0.00" oninput="updateManualPreview()"/></div>
+          <div class="field"><label>James's amount ($)</label><input id="f-splitamt2" class="readonly" readonly placeholder="0.00"/></div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-primary" onclick="submitForm()">Add bill</button>
+      <button class="btn" onclick="cancelForm()">Cancel</button>
+    </div>
+  </div>
+
+  <div class="tabs" id="tabs"></div>
+
+  <div class="table-box">
+    <div id="billsContainer"></div>
+  </div>
+  <div class="footer" id="footer"></div>
+</div>
+
+<script>
+let bills = [];
+let editId = null;
+let filter = 'all';
+let splitMode = 'pct';
+
+function load() {
+  try { bills = JSON.parse(localStorage.getItem('hbt-bills-lj') || '[]'); } catch(e) { bills = []; }
+  render();
+}
+
+function save() {
+  try { localStorage.setItem('hbt-bills-lj', JSON.stringify(bills)); } catch(e) {}
+}
+
+function today() { return new Date().toISOString().slice(0,10); }
+function fmt(n) { return '$' + Math.abs(parseFloat(n)||0).toFixed(2); }
+function fmtDate(d) { if(!d) return '—'; const [y,m,day]=d.split('-'); return `${m}/${day}/${y}`; }
+function isOverdue(b) { return b.due && b.due < today() && b.status !== 'paid'; }
+
+function setSplitMode(m) {
+  splitMode = m;
+  document.getElementById('split-pct').style.display = m==='pct'?'block':'none';
+  document.getElementById('split-manual').style.display = m==='manual'?'block':'none';
+  document.getElementById('modeBtn-pct').classList.toggle('active', m==='pct');
+  document.getElementById('modeBtn-manual').classList.toggle('active', m==='manual');
+}
+
+function updateSplitPreview() {
+  const total = parseFloat(document.getElementById('f-amount').value)||0;
+  const pct = parseInt(document.getElementById('f-split').value);
+  const s1 = +((pct/100)*total).toFixed(2);
+  const s2 = +(total-s1).toFixed(2);
+  document.getElementById('pct-lizzy').textContent = `Lizzy ${pct}%`;
+  document.getElementById('pct-james').textContent = `James ${100-pct}%`;
+  document.getElementById('amt-lizzy').textContent = fmt(s1);
+  document.getElementById('amt-james').textContent = fmt(s2);
+}
+
+function updateManualPreview() {
+  const total = parseFloat(document.getElementById('f-amount').value)||0;
+  const s1 = Math.min(Math.max(parseFloat(document.getElementById('f-splitamt').value)||0,0),total);
+  document.getElementById('f-splitamt2').value = (total-s1).toFixed(2);
+}
+
+function getShares() {
+  const total = parseFloat(document.getElementById('f-amount').value)||0;
+  if (splitMode==='manual') {
+    const s1 = Math.min(Math.max(parseFloat(document.getElementById('f-splitamt').value)||0,0),total);
+    return {s1:+s1.toFixed(2), s2:+(total-s1).toFixed(2)};
+  }
+  const pct = parseInt(document.getElementById('f-split').value);
+  const s1 = +((pct/100)*total).toFixed(2);
+  return {s1, s2:+(total-s1).toFixed(2)};
+}
+
+function toggleForm() {
+  const box = document.getElementById('formBox');
+  const showing = box.style.display !== 'none';
+  if (showing) { cancelForm(); } else { editId=null; resetForm(); box.style.display='block'; document.getElementById('toggleFormBtn').textContent='✕ Cancel'; }
+}
+
+function cancelForm() {
+  document.getElementById('formBox').style.display='none';
+  document.getElementById('toggleFormBtn').textContent='+ Add bill';
+  resetForm(); editId=null;
+}
+
+function resetForm() {
+  ['f-name','f-amount','f-due','f-splitamt','f-splitamt2'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('f-cat').value='Utilities';
+  document.getElementById('f-paidby').value='Lizzy';
+  document.getElementById('f-method').value='Venmo';
+  document.getElementById('f-recur').value='One-time';
+  document.getElementById('f-split').value=50;
+  setSplitMode('pct'); updateSplitPreview();
+  document.getElementById('formError').style.display='none';
+  document.getElementById('formTitle').textContent = editId ? 'Edit bill' : 'Add a bill';
+  document.querySelector('#formBox .btn-primary').textContent = editId ? 'Save changes' : 'Add bill';
+}
+
+function submitForm() {
+  const name = document.getElementById('f-name').value.trim();
+  const amount = parseFloat(document.getElementById('f-amount').value);
+  const errEl = document.getElementById('formError');
+  if (!name || isNaN(amount) || amount<=0) { errEl.textContent='Please enter a bill name and valid amount.'; errEl.style.display='block'; return; }
+  errEl.style.display='none';
+  const shares = getShares();
+  const pct = splitMode==='pct' ? parseInt(document.getElementById('f-split').value) : 50;
+  const bill = {
+    id: editId||Date.now(), name,
+    category: document.getElementById('f-cat').value,
+    amount, due: document.getElementById('f-due').value,
+    paidBy: document.getElementById('f-paidby').value,
+    method: document.getElementById('f-method').value,
+    recur: document.getElementById('f-recur').value,
+    split: pct, shares,
+    status: editId ? (bills.find(b=>b.id===editId)?.status||'unpaid') : 'unpaid'
+  };
+  if (editId) { bills = bills.map(b=>b.id===editId?bill:b); }
+  else { bills.push(bill); }
+  save(); cancelForm(); render();
+}
+
+function startEdit(id) {
+  const b = bills.find(x=>x.id===id); if(!b) return;
+  editId = id;
+  document.getElementById('formBox').style.display='block';
+  document.getElementById('toggleFormBtn').textContent='✕ Cancel';
+  document.getElementById('formTitle').textContent='Edit bill';
+  document.querySelector('#formBox .btn-primary').textContent='Save changes';
+  document.getElementById('f-name').value=b.name;
+  document.getElementById('f-cat').value=b.category||'Other';
+  document.getElementById('f-amount').value=b.amount;
+  document.getElementById('f-due').value=b.due||'';
+  document.getElementById('f-paidby').value=b.paidBy;
+  document.getElementById('f-method').value=b.method||'Venmo';
+  document.getElementById('f-recur').value=b.recur||'One-time';
+  document.getElementById('f-split').value=b.split||50;
+  setSplitMode('pct'); updateSplitPreview();
+}
+
+function togglePaid(id) {
+  bills = bills.map(b=>b.id===id?{...b,status:b.status==='paid'?'unpaid':'paid'}:b);
+  save(); render();
+}
+
+function deleteBill(id) {
+  if(!confirm('Delete this bill?')) return;
+  bills = bills.filter(b=>b.id!==id);
+  save(); render();
+}
+
+function setFilter(f) { filter=f; render(); }
+
+function render() {
+  // Balance
+  let lizzy=0, james=0;
+  bills.forEach(b=>{
+    if(b.status==='paid') return;
+    const s1=b.shares?.s1||0, s2=b.shares?.s2||0;
+    if(b.paidBy==='Lizzy') james+=s2;
+    else if(b.paidBy==='James') lizzy+=s1;
+  });
+  const unpaid = bills.filter(b=>b.status!=='paid').reduce((s,b)=>s+b.amount,0);
+  const overdueCnt = bills.filter(isOverdue).length;
+
+  document.getElementById('cards').innerHTML = [
+    {l:'Lizzy owes',v:fmt(lizzy),cls:lizzy>0?'owe':lizzy<0?'gets':'zero'},
+    {l:'James owes',v:fmt(james),cls:james>0?'owe':james<0?'gets':'zero'},
+    {l:'Unpaid total',v:fmt(unpaid),cls:'neutral'},
+    {l:'Overdue',v:overdueCnt,cls:overdueCnt>0?'owe':'zero'},
+  ].map(c=>`<div class="card"><div class="clabel">${c.l}</div><div class="cval ${c.cls}">${c.v}</div></div>`).join('');
+
+  // Tabs
+  const tabs = ['all','unpaid','paid','overdue'];
+  document.getElementById('tabs').innerHTML = tabs.map(t=>`<button class="tab${filter===t?' active':''}" onclick="setFilter('${t}')">${t.charAt(0).toUpperCase()+t.slice(1)}${t==='overdue'&&overdueCnt>0?' ('+overdueCnt+')':''}</button>`).join('');
+
+  // Filter & sort
+  let list = bills.filter(b=>
+    filter==='unpaid'?b.status!=='paid':
+    filter==='paid'?b.status==='paid':
+    filter==='overdue'?isOverdue(b):true
+  ).sort((a,b)=>(!a.due&&!b.due)?0:!a.due?1:!b.due?-1:a.due.localeCompare(b.due));
+
+  const container = document.getElementById('billsContainer');
+  if(!list.length) { container.innerHTML=`<div class="empty">${filter==='all'?'No bills yet — add one above.':'No bills match this filter.'}</div>`; }
+  else {
+    container.innerHTML=`<div class="tbl-wrap"><table>
+      <thead><tr><th>Bill</th><th>Amount</th><th>Split</th><th>Paid by</th><th>Due</th><th>Recurs</th><th>Status</th><th></th></tr></thead>
+      <tbody>${list.map(b=>{
+        const over=isOverdue(b);
+        const s1=b.shares?.s1||0, s2=b.shares?.s2||0;
+        const badge=b.status==='paid'?'<span class="badge badge-paid">Paid</span>':
+          over?'<span class="badge badge-overdue">Overdue</span>':
+          (b.recur&&b.recur!=='One-time')?'<span class="badge badge-recurring">Recurring</span>':
+          '<span class="badge badge-due">Due</span>';
+        return `<tr style="opacity:${b.status==='paid'?0.55:1}">
+          <td><div style="font-weight:500">${b.name}</div><div style="font-size:.7rem;color:#888">${b.category||''}</div></td>
+          <td style="font-weight:500;white-space:nowrap">$${(b.amount||0).toFixed(2)}</td>
+          <td style="font-size:.75rem;color:#666;white-space:nowrap"><div>Lizzy: $${s1.toFixed(2)}</div><div>James: $${s2.toFixed(2)}</div></td>
+          <td style="white-space:nowrap"><div>${b.paidBy}</div><div style="font-size:.7rem;color:#888">${b.method||''}</div></td>
+          <td style="font-size:.75rem;white-space:nowrap;color:${over?'#a32d2d':'inherit'}">${fmtDate(b.due)}</td>
+          <td style="font-size:.75rem;color:#888;white-space:nowrap">${b.recur||'One-time'}</td>
+          <td>${badge}</td>
+          <td><div class="actions">
+            <button class="btn btn-sm" onclick="togglePaid(${b.id})">${b.status==='paid'?'Unmark':'✓ Paid'}</button>
+            <button class="btn btn-sm" onclick="startEdit(${b.id})">Edit</button>
+            <button class="btn btn-sm btn-danger" onclick="deleteBill(${b.id})">✕</button>
+          </div></td>
+        </tr>`;
+      }).join('')}</tbody>
+    </table></div>`;
+  }
+
+  document.getElementById('footer').textContent = `${bills.length} bill${bills.length!==1?'s':''} saved to this browser`;
+}
+
+document.getElementById('f-amount').addEventListener('input', ()=>{ updateSplitPreview(); updateManualPreview(); });
+load();
+</script>
+</body>
+</html>
