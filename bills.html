@@ -174,7 +174,7 @@ tr.row-upcoming:hover{background:#faf9f5}
     <!-- Payment method per person -->
     <div class="method-grid">
       <div class="method-section">
-        <div class="method-label">💗 Lizzy</div>
+        <div class="method-label">🩷 Lizzy</div>
         <div class="field" style="margin-bottom:6px"><label>Paid?</label>
           <select id="f-lizzy-paid"><option value="no">Not yet</option><option value="yes">Yes, paid</option></select>
         </div>
@@ -319,7 +319,13 @@ async function saveBills() {
 
 function todayStr() { return new Date().toISOString().slice(0,10); }
 function fmt(n) { return '$' + Math.abs(parseFloat(n)||0).toFixed(2); }
-function fmtDate(d) { if(!d) return '—'; const [y,m,day]=d.split('-'); return `${m}/${day}/${y}`; }
+function fmtDate(d) {
+  if(!d) return '—';
+  const clean = String(d).split('T')[0].trim();
+  const parts = clean.split('-');
+  if(parts.length!==3) return clean;
+  return `${parts[1]}/${parts[2]}/${parts[0]}`;
+}
 function isOverdue(b) { return b.due && b.due < todayStr() && b.status !== 'paid'; }
 function isPaid(b) { return b.status === 'paid'; }
 
@@ -518,7 +524,7 @@ function renderList() {
         ?`<span class="badge badge-recurring"><span class="badge-dot dot-recurring"></span>Recurring</span>`
         :`<span class="badge badge-due"><span class="badge-dot dot-due"></span>Due</span>`;
 
-      const lizzyCell = `<div><span class="person-chip chip-lizzy">💗 Lizzy</span></div>
+      const lizzyCell = `        <div><span class="person-chip chip-lizzy">🩷 Lizzy</span></div>
         <div style="font-size:.7rem;color:#666;margin-top:2px">$${s1.toFixed(2)}</div>
         <div>${b.lizzyPaid==='yes'
           ?`<span style="font-size:.65rem;color:#27ae60;font-weight:600">✓ Paid</span>`
