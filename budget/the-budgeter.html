@@ -545,7 +545,13 @@ function recalc(){
   const savAfterLbl=document.getElementById('sav-after-lbl');
  
   if(showProjections){
-    const spA=spendStart+gross-alloc;
+    const paidOffsetProj = Object.keys(paid).reduce((sum, iid) => {
+      for(const sec of SECTIONS){
+        if(state[sec.id]?.[iid] !== undefined) return sum + (state[sec.id][iid].amount || 0);
+      }
+      return sum;
+    }, 0);
+    const spA=spendStart+gross-alloc+paidOffsetProj;
     const spW=spA/2;
     const lvA=livingStart+livingOut;
     const svA=savStart+savOut;
@@ -571,7 +577,15 @@ function recalc(){
   }
  
   // Summary bar — available to spend + weekly
-  const baseAvail = showProjections ? spendStart+gross-alloc : spendStart-alloc;
+  // paidOffset cancels out the spend-start deductions made by checkboxes so
+  // "Available to spend" is unaffected by which items are marked paid.
+  const paidOffset = Object.keys(paid).reduce((sum, iid) => {
+    for(const sec of SECTIONS){
+      if(state[sec.id]?.[iid] !== undefined) return sum + (state[sec.id][iid].amount || 0);
+    }
+    return sum;
+  }, 0);
+  const baseAvail = showProjections ? spendStart+gross-alloc+paidOffset : spendStart-alloc+paidOffset;
   const wkAmt = baseAvail/2;
   const aEl=document.getElementById('avail-big');
   aEl.textContent=fm(baseAvail);
